@@ -21,6 +21,8 @@ public class Voiture {
     private String typeCarburant;
 
     // 🔹 Constructeur
+
+    public Voiture() {}
     public Voiture(String marque, String modele, int annee,
                    String immatriculation, double prixParJour,
                    boolean disponible, String categorie,
@@ -56,10 +58,21 @@ public class Voiture {
     }
 
     // 🔹 Getters & Setters
+
+    public int getId() {
+        return idVoiture;
+    }
+
+    public void setId(int idVoiture) {
+        this.idVoiture = idVoiture;
+    }
+
     public int getIdVoiture() { return idVoiture; }
     public void setIdVoiture(int idVoiture) { this.idVoiture = idVoiture; }
 
     public String getMarque() { return marque; }
+    public void setMarque(String marque) { this.marque = marque; }
+
     public String getModele() { return modele; }
     public int getAnnee() { return annee; }
     public String getImmatriculation() { return immatriculation; }

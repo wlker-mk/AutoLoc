@@ -1,6 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/voitureListFragment">
+
+    <!-- Fragment liste des voitures -->
+    <fragment
+        android:id="@+id/voitureListFragment"
+        android:name="com.example.autoloc.ui.voiture.VoitureListFragment"
+        android:label="Accueil">
+
+        <action
+            android:id="@+id/action_list_to_detail"
+            app:destination="@id/voitureDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Fragment détails voiture -->
+    <fragment
+        android:id="@+id/voitureDetailFragment"
+        android:name="com.example.autoloc.ui.voiture.VoitureDetailFragment"
+        android:label="Détails">
+
+        <argument
+            android:name="voitureId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_detail_to_reservation"
+            app:destination="@id/reservationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Fragment réservation -->
+    <fragment
+        android:id="@+id/reservationFragment"
+        android:name="com.example.autoloc.ui.reservation.ReservationFragment"
+        android:label="Réservation">
+
+        <argument
+            android:name="voitureId"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Fragment historique/profil -->
+    <fragment
+        android:id="@+id/historiqueFragment"
+        android:name="com.example.autoloc.ui.historique.HistoriqueFragment"
+        android:label="Profil" />
 
 </navigation>

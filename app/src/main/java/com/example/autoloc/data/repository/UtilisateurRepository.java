@@ -45,6 +45,9 @@ public class UtilisateurRepository {
     public Utilisateur getUtilisateur(int id) {
         return utilisateurDao.getById(id);
     }
+    public Utilisateur getUtilisateurParEmail(String email) {
+        return utilisateurDao.getByEmail(email);
+    }
 
     public void modifierProfil(Utilisateur utilisateur) {
         executorService.execute(() -> utilisateurDao.update(utilisateur));
