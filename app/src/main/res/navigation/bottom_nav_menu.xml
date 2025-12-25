@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_home"
+        android:id="@+id/voitureListFragment"
         android:icon="@drawable/ic_home"
         android:title="Accueil" />
 
     <item
-        android:id="@+id/nav_profile"
+        android:id="@+id/historiqueFragment"
         android:icon="@drawable/ic_profile"
         android:title="Profil" />
 

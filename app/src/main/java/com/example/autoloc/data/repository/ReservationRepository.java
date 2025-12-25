@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import com.example.autoloc.data.local.dao.ReservationDao;
 import com.example.autoloc.data.local.database.AppDatabase;
 import com.example.autoloc.data.local.entity.Reservation;
+import com.example.autoloc.data.local.entity.ReservationAvecVoiture;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +32,14 @@ public class ReservationRepository {
 
     public LiveData<List<Reservation>> getToutesLesReservations() {
         return reservationDao.getToutesLesReservations();
+    }
+
+    /**
+     * Récupère l'historique des réservations (terminées ou annulées) avec les détails des voitures
+     * @return LiveData contenant la liste des réservations avec leurs voitures
+     */
+    public LiveData<List<ReservationAvecVoiture>> getHistoriqueReservations() {
+        return reservationDao.getHistoriqueReservations();
     }
 
     public void inserer(Reservation reservation) {

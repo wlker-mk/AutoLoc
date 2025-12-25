@@ -38,7 +38,6 @@ public class VoitureAdapter extends ListAdapter<Voiture, VoitureAdapter.VoitureV
 
         @Override
         public boolean areContentsTheSame(@NonNull Voiture oldItem, @NonNull Voiture newItem) {
-            // Vous pouvez ajouter d'autres champs si nécessaire
             return oldItem.getMarque().equals(newItem.getMarque()) &&
                     oldItem.getModele().equals(newItem.getModele()) &&
                     oldItem.getPrixParJour() == newItem.getPrixParJour() &&
@@ -76,15 +75,13 @@ public class VoitureAdapter extends ListAdapter<Voiture, VoitureAdapter.VoitureV
             super(itemView);
             context = itemView.getContext();
 
-            // Initialisation des vues du layout item_voiture.xml
             imgVoiture = itemView.findViewById(R.id.imgVoiture);
             tvPrixOverlay = itemView.findViewById(R.id.tvPrixOverlay);
             tvNomVoiture = itemView.findViewById(R.id.tvNomVoiture);
             btnViewDetails = itemView.findViewById(R.id.btnViewDetails);
 
-            // Gestion du clic sur le bouton "View details"
             btnViewDetails.setOnClickListener(v -> {
-                int position = getAdapterPosition();
+                int position = getAbsoluteAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && listener != null) {
                     listener.onDetailsClick(getItem(position));
                 }
@@ -92,7 +89,7 @@ public class VoitureAdapter extends ListAdapter<Voiture, VoitureAdapter.VoitureV
         }
 
         void bind(Voiture voiture) {
-            // Concaténation de la marque et du modèle pour le nom
+            // Nom complet de la voiture
             String nomComplet = voiture.getMarque() + " " + voiture.getModele();
             tvNomVoiture.setText(nomComplet);
 
@@ -100,17 +97,13 @@ public class VoitureAdapter extends ListAdapter<Voiture, VoitureAdapter.VoitureV
             String prixFormatte = PriceCalculator.formatPrice(voiture.getPrixParJour()) + " / day";
             tvPrixOverlay.setText(prixFormatte);
 
-            // Chargement de l'image avec Glide (dépendance déjà présente)
-            // Assurez-vous que votre entité 'Voiture' a une méthode getImageUrl()
-            /*
+            // Chargement de l'image avec Glide
             Glide.with(context)
-                 .load(voiture.getImageUrl()) // ou une URL, un Fichier, etc.
-                 .placeholder(R.drawable.car_placeholder) // Image affichée pendant le chargement
-                 .error(R.drawable.car_placeholder) // Image affichée en cas d'erreur
-                 .into(imgVoiture);
-            */
-            // Ligne de secours si vous n'utilisez pas Glide pour le moment
-            imgVoiture.setImageResource(R.drawable.car_placeholder);
+                    .load(voiture.getImageUrl())
+                    .placeholder(R.drawable.car_placeholder)
+                    .error(R.drawable.car_placeholder)
+                    .centerCrop()
+                    .into(imgVoiture);
         }
     }
 }
