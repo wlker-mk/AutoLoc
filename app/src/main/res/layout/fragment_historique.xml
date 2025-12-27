@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Header -->
+        <!-- Header existant... -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
@@ -27,7 +27,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <!-- Séparateur -->
         <View
             android:id="@+id/divider1"
             android:layout_width="0dp"
@@ -37,7 +36,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle"/>
 
-        <!-- Photo profil -->
+        <!-- Photo profil, nom, email, bouton modifier (existants)... -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPhoto"
             android:layout_width="100dp"
@@ -58,7 +57,6 @@
                 android:contentDescription="Photo de profil"/>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Nom -->
         <TextView
             android:id="@+id/tvNom"
             android:layout_width="wrap_content"
@@ -72,7 +70,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardPhoto"/>
 
-        <!-- Email -->
         <TextView
             android:id="@+id/tvEmail"
             android:layout_width="wrap_content"
@@ -85,7 +82,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvNom"/>
 
-        <!-- Bouton Modifier le profil -->
         <Button
             android:id="@+id/btnModifierProfil"
             android:layout_width="0dp"
@@ -104,6 +100,59 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvEmail"/>
 
+        <!-- NOUVELLE SECTION: Réservations en cours -->
+        <TextView
+            android:id="@+id/tvReservationsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:text="Réservations en cours"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnModifierProfil"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewReservations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvReservationsTitle"/>
+
+        <LinearLayout
+            android:id="@+id/emptyStateReservations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvReservationsTitle">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_empty_car"
+                android:alpha="0.3"
+                android:contentDescription="Aucune réservation"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Aucune réservation en cours"
+                android:textSize="14sp"
+                android:textColor="#666666"/>
+        </LinearLayout>
+
         <!-- Section Historique -->
         <TextView
             android:id="@+id/tvHistoriqueTitle"
@@ -116,9 +165,8 @@
             android:textStyle="bold"
             android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnModifierProfil"/>
+            app:layout_constraintTop_toBottomOf="@id/recyclerViewReservations"/>
 
-        <!-- RecyclerView Historique -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewHistorique"
             android:layout_width="0dp"
@@ -130,12 +178,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvHistoriqueTitle"/>
 
-        <!-- Empty state historique -->
         <LinearLayout
             android:id="@+id/emptyStateHistorique"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:orientation="vertical"
             android:gravity="center"
             android:visibility="gone"
@@ -144,8 +191,8 @@
             app:layout_constraintTop_toBottomOf="@id/tvHistoriqueTitle">
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:src="@drawable/ic_empty_history"
                 android:alpha="0.3"
                 android:contentDescription="Aucun historique"/>
@@ -153,8 +200,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Aucune location enregistrée"
+                android:layout_marginTop="12dp"
+                android:text="Aucune location terminée"
                 android:textSize="14sp"
                 android:textColor="#666666"/>
         </LinearLayout>

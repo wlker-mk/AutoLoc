@@ -20,21 +20,32 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.autoloc.R;
 import com.example.autoloc.adapter.HistoriqueAdapter;
-import com.example.autoloc.data.local.entity.Utilisateur;
+import com.example.autoloc.adapter.ReservationAdapter;
 import com.example.autoloc.ui.auth.LoginActivity;
 import com.example.autoloc.utils.SessionManager;
 import com.example.autoloc.viewmodel.HistoriqueViewModel;
+import com.example.autoloc.viewmodel.ReservationViewModel;
 
 public class HistoriqueFragment extends Fragment {
 
     private ImageView imgProfil;
     private TextView tvNom, tvEmail;
     private Button btnModifierProfil, btnDeconnexion;
+
+    // RecyclerView pour les réservations en cours
+    private RecyclerView recyclerViewReservations;
+    private LinearLayout emptyStateReservations;
+    private TextView tvReservationsTitle;
+
+    // RecyclerView pour l'historique
     private RecyclerView recyclerViewHistorique;
     private LinearLayout emptyStateHistorique;
 
-    private HistoriqueAdapter adapter;
-    private HistoriqueViewModel viewModel;
+    private ReservationAdapter reservationAdapter;
+    private HistoriqueAdapter historiqueAdapter;
+
+    private HistoriqueViewModel historiqueViewModel;
+    private ReservationViewModel reservationViewModel;
     private SessionManager sessionManager;
 
     @Nullable
@@ -51,8 +62,8 @@ public class HistoriqueFragment extends Fragment {
         sessionManager = SessionManager.getInstance(requireContext());
 
         initViews(view);
-        setupRecyclerView();
-        setupViewModel();
+        setupRecyclerViews();
+        setupViewModels();
         afficherInfosUtilisateur();
         setupListeners();
     }
@@ -63,49 +74,93 @@ public class HistoriqueFragment extends Fragment {
         tvEmail = view.findViewById(R.id.tvEmail);
         btnModifierProfil = view.findViewById(R.id.btnModifierProfil);
         btnDeconnexion = view.findViewById(R.id.btnDeconnexion);
+
+        // Réservations en cours
+        tvReservationsTitle = view.findViewById(R.id.tvReservationsTitle);
+        recyclerViewReservations = view.findViewById(R.id.recyclerViewReservations);
+        emptyStateReservations = view.findViewById(R.id.emptyStateReservations);
+
+        // Historique
         recyclerViewHistorique = view.findViewById(R.id.recyclerViewHistorique);
         emptyStateHistorique = view.findViewById(R.id.emptyStateHistorique);
     }
 
-    private void setupRecyclerView() {
-        adapter = new HistoriqueAdapter();
-        recyclerViewHistorique.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerViewHistorique.setAdapter(adapter);
+    private void setupRecyclerViews() {
+        // Adapter pour les réservations en cours
+        reservationAdapter = new ReservationAdapter();
+        recyclerViewReservations.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerViewReservations.setAdapter(reservationAdapter);
 
-        // Gestion du clic sur un élément de l'historique
-        adapter.setOnHistoriqueClickListener(reservation -> {
-            // Afficher les détails de la réservation (à implémenter si nécessaire)
-            // Pour l'instant, on ne fait rien
-        });
+        // Adapter pour l'historique
+        historiqueAdapter = new HistoriqueAdapter();
+        recyclerViewHistorique.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerViewHistorique.setAdapter(historiqueAdapter);
     }
 
-    private void setupViewModel() {
-        viewModel = new ViewModelProvider(this).get(HistoriqueViewModel.class);
+    private void setupViewModels() {
+        historiqueViewModel = new ViewModelProvider(this).get(HistoriqueViewModel.class);
+        reservationViewModel = new ViewModelProvider(this).get(ReservationViewModel.class);
 
-        // Observer l'historique des réservations
-        viewModel.getHistoriqueReservations().observe(getViewLifecycleOwner(), reservations -> {
+        int userId = sessionManager.getUserId();
+
+        // Observer les réservations en cours (EN_ATTENTE et VALIDEE)
+        reservationViewModel.getReservationsUtilisateur(userId).observe(getViewLifecycleOwner(), reservations -> {
+            if (reservations == null || reservations.isEmpty()) {
+                emptyStateReservations.setVisibility(View.VISIBLE);
+                recyclerViewReservations.setVisibility(View.GONE);
+            } else {
+                // Filtrer uniquement les réservations en cours
+                var reservationsEnCours = reservations.stream()
+                        .filter(r -> r.getStatut().equals("EN_ATTENTE") || r.getStatut().equals("VALIDEE"))
+                        .collect(java.util.stream.Collectors.toList());
+
+                if (reservationsEnCours.isEmpty()) {
+                    emptyStateReservations.setVisibility(View.VISIBLE);
+                    recyclerViewReservations.setVisibility(View.GONE);
+                } else {
+                    emptyStateReservations.setVisibility(View.GONE);
+                    recyclerViewReservations.setVisibility(View.VISIBLE);
+                    reservationAdapter.submitList(reservationsEnCours);
+                }
+            }
+        });
+
+        // Observer l'historique (TERMINEE et ANNULEE)
+        historiqueViewModel.getHistoriqueReservations().observe(getViewLifecycleOwner(), reservations -> {
             if (reservations == null || reservations.isEmpty()) {
                 emptyStateHistorique.setVisibility(View.VISIBLE);
                 recyclerViewHistorique.setVisibility(View.GONE);
             } else {
                 emptyStateHistorique.setVisibility(View.GONE);
                 recyclerViewHistorique.setVisibility(View.VISIBLE);
-                adapter.submitList(reservations);
+                historiqueAdapter.submitList(reservations);
+            }
+        });
+
+        // Gestion des clics sur les réservations
+        reservationAdapter.setOnReservationClickListener(new ReservationAdapter.OnReservationClickListener() {
+            @Override
+            public void onReservationClick(com.example.autoloc.data.local.entity.Reservation reservation) {
+                // Afficher les détails si nécessaire
+            }
+
+            @Override
+            public void onAnnulerClick(com.example.autoloc.data.local.entity.Reservation reservation) {
+                reservation.annulerReservation();
+                reservationViewModel.modifier(reservation);
             }
         });
     }
 
     private void afficherInfosUtilisateur() {
-        // Récupérer les infos depuis SessionManager
         String nomComplet = sessionManager.getUserFullName();
         String email = sessionManager.getUserEmail();
 
         tvNom.setText(nomComplet);
         tvEmail.setText(email);
 
-        // Charger l'image de profil (placeholder pour le moment)
         Glide.with(requireContext())
-                .load("") // URL vide = placeholder
+                .load("")
                 .placeholder(R.drawable.profile_placeholder)
                 .error(R.drawable.profile_placeholder)
                 .circleCrop()
@@ -115,15 +170,10 @@ public class HistoriqueFragment extends Fragment {
     private void setupListeners() {
         btnModifierProfil.setOnClickListener(v -> {
             // Fonctionnalité à implémenter
-            // Pour l'instant, on affiche juste un message
-            // Toast.makeText(requireContext(), "Modification du profil (à venir)", Toast.LENGTH_SHORT).show();
         });
 
         btnDeconnexion.setOnClickListener(v -> {
-            // Déconnecter l'utilisateur
             sessionManager.logout();
-
-            // Rediriger vers l'écran de connexion
             Intent intent = new Intent(requireActivity(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
