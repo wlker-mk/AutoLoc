@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/car_detail_placeholder"
+                android:src="@drawable/porche"
                 android:contentDescription="Image voiture"/>
         </com.google.android.material.card.MaterialCardView>
 

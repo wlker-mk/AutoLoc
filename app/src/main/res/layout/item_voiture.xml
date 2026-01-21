@@ -24,7 +24,7 @@
             android:layout_width="0dp"
             android:layout_height="180dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/car_placeholder"
+            android:src="@drawable/bmw"
             android:contentDescription="Image voiture"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
