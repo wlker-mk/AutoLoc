@@ -27,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
         // Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         // Récupérez le NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
@@ -47,6 +51,20 @@ public class MainActivity extends AppCompatActivity {
 
             // Liaison BottomNavigation + Navigation
             NavigationUI.setupWithNavController(bottomNavigationView, this.navController);
+
+            // Gérer l'affichage de la toolbar selon le fragment
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                if (getSupportActionBar() != null) {
+                    // Afficher la toolbar uniquement pour les fragments de détail
+                    if (destination.getId() == R.id.voitureDetailFragment ||
+                            destination.getId() == R.id.reservationFragment) {
+                        getSupportActionBar().show();
+                        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+                    } else {
+                        getSupportActionBar().hide();
+                    }
+                }
+            });
         }
     }
 

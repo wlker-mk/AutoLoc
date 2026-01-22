@@ -1,7 +1,9 @@
 package com.example.autoloc.ui.historique;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,23 +24,27 @@ import com.bumptech.glide.Glide;
 import com.example.autoloc.R;
 import com.example.autoloc.adapter.HistoriqueAdapter;
 import com.example.autoloc.adapter.ReservationAdapter;
+import com.example.autoloc.data.local.entity.Utilisateur;
 import com.example.autoloc.ui.auth.LoginActivity;
 import com.example.autoloc.utils.SessionManager;
 import com.example.autoloc.viewmodel.HistoriqueViewModel;
 import com.example.autoloc.viewmodel.ReservationViewModel;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HistoriqueFragment extends Fragment {
 
     private ImageView imgProfil;
     private TextView tvNom, tvEmail;
-    private Button btnModifierProfil, btnDeconnexion;
+    private Button btnModifierProfil;
+    private Button btnDeconnexion;
 
-    // RecyclerView pour les réservations en cours
     private RecyclerView recyclerViewReservations;
     private LinearLayout emptyStateReservations;
-    private TextView tvReservationsTitle;
 
-    // RecyclerView pour l'historique
     private RecyclerView recyclerViewHistorique;
     private LinearLayout emptyStateHistorique;
 
@@ -75,23 +82,18 @@ public class HistoriqueFragment extends Fragment {
         btnModifierProfil = view.findViewById(R.id.btnModifierProfil);
         btnDeconnexion = view.findViewById(R.id.btnDeconnexion);
 
-        // Réservations en cours
-        tvReservationsTitle = view.findViewById(R.id.tvReservationsTitle);
         recyclerViewReservations = view.findViewById(R.id.recyclerViewReservations);
         emptyStateReservations = view.findViewById(R.id.emptyStateReservations);
 
-        // Historique
         recyclerViewHistorique = view.findViewById(R.id.recyclerViewHistorique);
         emptyStateHistorique = view.findViewById(R.id.emptyStateHistorique);
     }
 
     private void setupRecyclerViews() {
-        // Adapter pour les réservations en cours
         reservationAdapter = new ReservationAdapter();
         recyclerViewReservations.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewReservations.setAdapter(reservationAdapter);
 
-        // Adapter pour l'historique
         historiqueAdapter = new HistoriqueAdapter();
         recyclerViewHistorique.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewHistorique.setAdapter(historiqueAdapter);
@@ -103,13 +105,11 @@ public class HistoriqueFragment extends Fragment {
 
         int userId = sessionManager.getUserId();
 
-        // Observer les réservations en cours (EN_ATTENTE et VALIDEE)
         reservationViewModel.getReservationsUtilisateur(userId).observe(getViewLifecycleOwner(), reservations -> {
             if (reservations == null || reservations.isEmpty()) {
                 emptyStateReservations.setVisibility(View.VISIBLE);
                 recyclerViewReservations.setVisibility(View.GONE);
             } else {
-                // Filtrer uniquement les réservations en cours
                 var reservationsEnCours = reservations.stream()
                         .filter(r -> r.getStatut().equals("EN_ATTENTE") || r.getStatut().equals("VALIDEE"))
                         .collect(java.util.stream.Collectors.toList());
@@ -125,7 +125,6 @@ public class HistoriqueFragment extends Fragment {
             }
         });
 
-        // Observer l'historique (TERMINEE et ANNULEE)
         historiqueViewModel.getHistoriqueReservations().observe(getViewLifecycleOwner(), reservations -> {
             if (reservations == null || reservations.isEmpty()) {
                 emptyStateHistorique.setVisibility(View.VISIBLE);
@@ -137,11 +136,10 @@ public class HistoriqueFragment extends Fragment {
             }
         });
 
-        // Gestion des clics sur les réservations
         reservationAdapter.setOnReservationClickListener(new ReservationAdapter.OnReservationClickListener() {
             @Override
             public void onReservationClick(com.example.autoloc.data.local.entity.Reservation reservation) {
-                // Afficher les détails si nécessaire
+                // Afficher les détails
             }
 
             @Override
@@ -168,9 +166,7 @@ public class HistoriqueFragment extends Fragment {
     }
 
     private void setupListeners() {
-        btnModifierProfil.setOnClickListener(v -> {
-            // Fonctionnalité à implémenter
-        });
+        btnModifierProfil.setOnClickListener(v -> afficherDialogModificationProfil());
 
         btnDeconnexion.setOnClickListener(v -> {
             sessionManager.logout();
@@ -178,6 +174,74 @@ public class HistoriqueFragment extends Fragment {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             requireActivity().finish();
+        });
+    }
+
+    private void afficherDialogModificationProfil() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_modifier_profil, null);
+
+        TextInputEditText etNom = dialogView.findViewById(R.id.etNom);
+        TextInputEditText etPrenom = dialogView.findViewById(R.id.etPrenom);
+        TextInputEditText etEmail = dialogView.findViewById(R.id.etEmail);
+
+        // Pré-remplir avec les données actuelles
+        etNom.setText(sessionManager.getUserNom());
+        etPrenom.setText(sessionManager.getUserPrenom());
+        etEmail.setText(sessionManager.getUserEmail());
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Modifier le profil")
+                .setView(dialogView)
+                .setPositiveButton("Enregistrer", (dialog, which) -> {
+                    String nom = etNom.getText().toString().trim();
+                    String prenom = etPrenom.getText().toString().trim();
+                    String email = etEmail.getText().toString().trim();
+
+                    if (TextUtils.isEmpty(nom) || TextUtils.isEmpty(prenom) || TextUtils.isEmpty(email)) {
+                        Toast.makeText(requireContext(), "Tous les champs sont obligatoires", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    modifierProfil(nom, prenom, email);
+                })
+                .setNegativeButton("Annuler", null)
+                .show();
+    }
+
+    private void modifierProfil(String nom, String prenom, String email) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                Utilisateur utilisateur = com.example.autoloc.application.AutoLocApplication
+                        .getInstance()
+                        .getDatabase()
+                        .utilisateurDao()
+                        .getById(sessionManager.getUserId());
+
+                if (utilisateur != null) {
+                    utilisateur.setNom(nom);
+                    utilisateur.setPrenom(prenom);
+                    utilisateur.setEmail(email);
+
+                    com.example.autoloc.application.AutoLocApplication
+                            .getInstance()
+                            .getDatabase()
+                            .utilisateurDao()
+                            .update(utilisateur);
+
+                    // Mettre à jour la session
+                    sessionManager.login(utilisateur);
+
+                    requireActivity().runOnUiThread(() -> {
+                        Toast.makeText(requireContext(), "Profil modifié avec succès", Toast.LENGTH_SHORT).show();
+                        afficherInfosUtilisateur();
+                    });
+                }
+            } catch (Exception e) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), "Erreur: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+            }
         });
     }
 }

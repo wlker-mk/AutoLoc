@@ -23,7 +23,7 @@
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_car_logo"
+            android:src="@drawable/logo2"
             android:contentDescription="Logo"/>
 
         <TextView

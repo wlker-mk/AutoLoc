@@ -11,13 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Header existant... -->
+        <!-- Header -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="Profil / Historique"
+            android:text="Profil"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#000000"
@@ -36,7 +36,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle"/>
 
-        <!-- Photo profil, nom, email, bouton modifier (existants)... -->
+        <!-- Photo profil -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPhoto"
             android:layout_width="100dp"
@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Alexandre Dupont"
+            android:text="donne usiruto"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#000000"
@@ -75,13 +75,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="alexandre.dupont@email.com"
+            android:text="usiruti@gmail.com"
             android:textSize="14sp"
             android:textColor="#666666"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvNom"/>
 
+        <!-- Bouton modifier le profil -->
         <Button
             android:id="@+id/btnModifierProfil"
             android:layout_width="0dp"
@@ -100,7 +101,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvEmail"/>
 
-        <!-- NOUVELLE SECTION: Réservations en cours -->
+        <!-- Réservations en cours -->
         <TextView
             android:id="@+id/tvReservationsTitle"
             android:layout_width="wrap_content"
@@ -153,7 +154,7 @@
                 android:textColor="#666666"/>
         </LinearLayout>
 
-        <!-- Section Historique -->
+        <!-- Historique -->
         <TextView
             android:id="@+id/tvHistoriqueTitle"
             android:layout_width="wrap_content"
