@@ -29,6 +29,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "autoloc_db";
     private static volatile AppDatabase INSTANCE;
 
+
     // DAO
     public abstract UtilisateurDao utilisateurDao();
     public abstract VoitureDao voitureDao();

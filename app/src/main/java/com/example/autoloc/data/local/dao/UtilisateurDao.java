@@ -12,7 +12,6 @@ public interface UtilisateurDao {
 
     @Insert
     long insert(Utilisateur utilisateur);
-
     @Update
     void update(Utilisateur utilisateur);
 

@@ -5,12 +5,12 @@
             android:background="@color/white">
 
             <!-- Image de fond qui couvre tout l'écran -->
-            <ImageView
-                android:id="@+id/imgSplashBg"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/logo_1"
-                android:contentDescription="@null" />
+    <ImageView
+        android:id="@+id/imgSplashBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/logo_1" />
 
 </FrameLayout>
